@@ -1,5 +1,7 @@
 package model.dao;
 
+import model.Cliente;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -7,13 +9,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Crud_Cliente {
+public class CrudCliente {
 
     //Atributo da conexao
     private Connection conn;
 
     //construtor
-    public Crud_Cliente(Connection conn) {
+    public CrudCliente(Connection conn) {
         this.conn = conn;
     }
 

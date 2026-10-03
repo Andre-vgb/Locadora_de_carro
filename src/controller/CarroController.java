@@ -1,14 +1,14 @@
 package controller;
 
-import model.dao.Carro;
-import model.dao.CRUDCarro;
+import model.Carro;
+import model.dao.CrudCarro;
 import model.dao.Conexao;
 
 import java.sql.Statement;
 import java.util.ArrayList;
 
 public class CarroController {
-    private CRUDCarro crudCarro;
+    private CrudCarro crudCarro;
     private String tabela = "carro";
 
     public CarroController() {
@@ -19,7 +19,7 @@ public class CarroController {
             Conexao conn = new Conexao();
             conn.connDB(db);
             Statement s = conn.getS();
-            crudCarro = new CRUDCarro(s);
+            crudCarro = new CrudCarro(s);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

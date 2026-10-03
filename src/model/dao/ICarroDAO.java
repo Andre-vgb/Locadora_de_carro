@@ -1,5 +1,7 @@
 package model.dao;
 
+import model.Carro;
+
 import java.util.ArrayList;
 
 public interface ICarroDAO {

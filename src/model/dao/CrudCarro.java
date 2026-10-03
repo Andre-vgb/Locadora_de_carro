@@ -1,13 +1,15 @@
 package model.dao;
 
+import model.Carro;
+
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class CRUDCarro implements ICarroDAO {
+public class CrudCarro implements ICarroDAO {
     private Statement s;
 
-    public CRUDCarro(Statement s) {
+    public CrudCarro(Statement s) {
         this.s = s;
     }
 
