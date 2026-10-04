@@ -32,13 +32,22 @@ public class UsuarioController {
         return false;
     }
 
-    public String cadastrarUsuario(Usuario novoUsuario) {
+    public String cadastrarUsuario(Usuario novoUsuario, String confirmacaoSenha) {
         try {
+            if (novoUsuario.getNome() == null || novoUsuario.getNome().isBlank()) {
+                return "O nome e obrigatorio.";
+            }
+            if (novoUsuario.getSobrenome() == null || novoUsuario.getSobrenome().isBlank()) {
+                return "O sobrenome e obrigatorio.";
+            }
             if (novoUsuario.getLogin() == null || novoUsuario.getLogin().isBlank()) {
                 return "O login e obrigatorio.";
             }
             if (novoUsuario.getSenha() == null || novoUsuario.getSenha().isBlank()) {
                 return "A senha e obrigatoria.";
+            }
+            if (!novoUsuario.getSenha().equals(confirmacaoSenha)) {
+                return "As senhas nao conferem.";
             }
             if (!"admin".equals(novoUsuario.getTipo()) && !"comum".equals(novoUsuario.getTipo())) {
                 return "O tipo do usuario deve ser 'admin' ou 'comum'.";
@@ -53,12 +62,21 @@ public class UsuarioController {
         return "Erro ao cadastrar usuario!";
     }
 
-    public Usuario fazerLogin(String login, String senha) {
+    public Usuario fazerLogin(String login, String senha, String tipoEsperado) {
         try {
             if (login == null || login.isBlank() || senha == null || senha.isBlank()) {
                 return null;
             }
-            return this.crudUsuario.validarLogin(this.tabela, login, senha);
+
+            Usuario usuario = this.crudUsuario.validarLogin(this.tabela, login, senha);
+
+            if (usuario == null) {
+                return null;
+            }
+            if (!usuario.getTipo().equals(tipoEsperado)) {
+                return null;
+            }
+            return usuario;
         } catch (Exception e) {
             e.printStackTrace();
         }

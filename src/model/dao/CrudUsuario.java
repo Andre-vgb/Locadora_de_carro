@@ -21,15 +21,17 @@ public class CrudUsuario implements IUsuarioDAO {
     //Aqui vai os comandos para o banco (?,?,? é os espaços a serem preenchidos apos colocar os dados do usuario)
     @Override
     public String cadastrarUsuario(String tabela, Usuario novoUsuario) {
-        String sql = "INSERT INTO " + tabela + " (login, senha, tipo) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO " + tabela + " (nome, sobrenome, login, senha, tipo) VALUES (?, ?, ?, ?, ?)";
 
         // pega o sql e prepara para ser enviado, gerando o ps.(o try faz o ps fechar sozinho)
         //para que nao fique um recurso aberto no banco
         //try é o bloco que tenta executar e se der erro no banco o java pula pro catch
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, novoUsuario.getLogin());
-            ps.setString(2, novoUsuario.getSenha());
-            ps.setString(3, novoUsuario.getTipo());
+            ps.setString(1, novoUsuario.getNome());
+            ps.setString(2, novoUsuario.getSobrenome());
+            ps.setString(3, novoUsuario.getLogin());
+            ps.setString(4, novoUsuario.getSenha());
+            ps.setString(5, novoUsuario.getTipo());
 
             ps.executeUpdate();
             return "Usuario cadastrado com sucesso!";
@@ -124,13 +126,15 @@ public class CrudUsuario implements IUsuarioDAO {
 
     @Override
     public String atualizarUsuario(String tabela, int id, Usuario dadosAtualizados) {
-        String sql = "UPDATE " + tabela + " SET login = ?, senha = ?, tipo = ? WHERE id = ?";
+        String sql = "UPDATE " + tabela + " SET nome = ?, sobrenome = ?, login = ?, senha = ?, tipo = ? WHERE id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dadosAtualizados.getLogin());
-            ps.setString(2, dadosAtualizados.getSenha());
-            ps.setString(3, dadosAtualizados.getTipo());
-            ps.setInt(4, id);
+            ps.setString(1, dadosAtualizados.getNome());
+            ps.setString(2, dadosAtualizados.getSobrenome());
+            ps.setString(3, dadosAtualizados.getLogin());
+            ps.setString(4, dadosAtualizados.getSenha());
+            ps.setString(5, dadosAtualizados.getTipo());
+            ps.setInt(6, id);
 
             int linhasAfetadas = ps.executeUpdate();
             if (linhasAfetadas == 0) {
@@ -168,6 +172,8 @@ public class CrudUsuario implements IUsuarioDAO {
     private Usuario montarUsuario(ResultSet rs) throws SQLException {
         return new Usuario(
                 rs.getInt("id"),
+                rs.getString("nome"),
+                rs.getString("sobrenome"),
                 rs.getString("login"),
                 rs.getString("senha"),
                 rs.getString("tipo")
