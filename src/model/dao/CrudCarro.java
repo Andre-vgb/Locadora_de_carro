@@ -7,14 +7,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class CrudCarro implements ICarroDAO {
+
+    // Objeto usado para enviar os comandos SQL ao banco
     private Statement s;
 
+    // Recebe o Statement ja criado pela Conexao (via controller)
     public CrudCarro(Statement s) {
         this.s = s;
     }
 
-
-    // ESSE É O CREATE
+    // Create: insere um carro novo na tabela.
+    // O SQL e montado juntando texto com os valores do objeto Carro.
+    // Textos (placa, modelo, cor, status) vao entre aspas simples, numeros (ano, valor) nao.
+    // Retorna "Codigo retornado: 1" quando deu certo (1 linha inserida) e -1 se deu erro.
     @Override
     public String inserirCarro(String tabela, Carro novoCarro){
         String SQL = "INSERT INTO "+tabela+" (placa, modelo, ano, cor, status, valor_diaria) VALUES ('"
@@ -23,6 +28,7 @@ public class CrudCarro implements ICarroDAO {
                 +novoCarro.getStatus()+"', "+novoCarro.getValorDiaria()+")";
         int linhasAfetadas = -1;
         try{
+            // executeUpdate e usado para INSERT, UPDATE e DELETE (retorna quantas linhas mudaram)
             linhasAfetadas = s.executeUpdate(SQL);
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,12 +36,15 @@ public class CrudCarro implements ICarroDAO {
         return "Codigo retornado: "+linhasAfetadas;
     }
 
-    // ===================== READ =====================
-
+    // Read: retorna todos os carros da tabela.
+    // O ResultSet e um "ponteiro" que anda linha por linha no resultado do SELECT.
+    // Para cada linha, monta um objeto Carro e coloca na lista.
+    // Retorna null se der erro.
     @Override
     public ArrayList<Carro> selecionarTodos(String tabela){
         String SQL = "SELECT * FROM \"" + tabela + "\";";
         try {
+            // executeQuery e usado para SELECT (devolve um ResultSet)
             ResultSet rset = s.executeQuery(SQL);
             ArrayList<Carro> lista = new ArrayList<>();
             while(rset.next()){
@@ -48,10 +57,9 @@ public class CrudCarro implements ICarroDAO {
         return null;
     }
 
-
-    // READ (busca por chave primária)
-
-
+    // Read (busca por chave primaria): procura um unico carro pela placa.
+    // Como a placa e a PK, vem no maximo uma linha, entao usa if em vez de while.
+    // Retorna null se nao achar ou se der erro.
     @Override
     public Carro selecionarPlaca(String tabela, String placa){
         String SQL = "SELECT * FROM \"" + tabela + "\" WHERE placa = '"+placa+"';";
@@ -66,10 +74,9 @@ public class CrudCarro implements ICarroDAO {
         return null;
     }
 
-
-    // READ (busca textual, não exata)
-
-
+    // Read (busca textual, nao exata): acha carros cujo modelo CONTENHA o texto.
+    // ILIKE ignora maiusculas e minusculas (so existe no PostgreSQL).
+    // Os % significam "qualquer coisa antes e depois", entao "oni" acha "Onix".
     @Override
     public ArrayList<Carro> buscarPorModelo(String tabela, String modelo){
         String SQL = "SELECT * FROM \"" + tabela + "\" WHERE modelo ILIKE '%"+modelo+"%';";
@@ -86,8 +93,8 @@ public class CrudCarro implements ICarroDAO {
         return null;
     }
 
-    // READ (filtro por uma condição exata)
-
+    // Read (filtro por uma condicao exata): lista so os carros com o status informado
+    // (por exemplo "disponivel" ou "alugado").
     @Override
     public ArrayList<Carro> filtrarPorStatus(String tabela, String status){
         String SQL = "SELECT * FROM \"" + tabela + "\" WHERE status = '"+status+"';";
@@ -104,10 +111,9 @@ public class CrudCarro implements ICarroDAO {
         return null;
     }
 
-
-    // ===================== UPDATE =====================
-
-
+    // Update: altera os dados cadastrais de um carro (modelo, ano, cor e valor da diaria).
+    // O WHERE garante que so o carro dessa placa seja alterado.
+    // Placa, status e imagem nao mudam aqui, cada um tem seu proprio metodo.
     @Override
     public String atualizarCarro(String tabela, String placa, Carro dadosAtualizados){
         String SQL = "UPDATE " + tabela + " SET modelo='" + dadosAtualizados.getModelo()
@@ -121,12 +127,12 @@ public class CrudCarro implements ICarroDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // "Linhas afetadas: 0" significa que nenhuma placa bateu (carro nao existe)
         return "Linhas afetadas: "+linhasAfetadas;
     }
 
-
-    // UPDATE (de um único campo específico)
-
+    // Update (de um unico campo especifico): muda so o status do carro.
+    // Usado, por exemplo, quando o carro e alugado ou devolvido.
     @Override
     public String atualizarStatus(String tabela, String placa, String novoStatus){
         String SQL = "UPDATE " + tabela + " SET status='" + novoStatus
@@ -140,10 +146,9 @@ public class CrudCarro implements ICarroDAO {
         return "Linhas afetadas: "+linhasAfetadas;
     }
 
-
-
-    // UPDATE (de um único campo específico, restrito ao admin na camada de cima)
-
+    // Update (de um unico campo especifico, restrito ao admin na camada de cima):
+    // grava o caminho do arquivo de imagem do carro (so o texto do caminho, nao a imagem).
+    // A checagem de "so administrador" e feita no CarroController, nao aqui.
     @Override
     public String atualizarImagem(String tabela, String placa, String caminhoImagem){
         String SQL = "UPDATE " + tabela + " SET caminho_imagem='" + caminhoImagem
@@ -157,17 +162,19 @@ public class CrudCarro implements ICarroDAO {
         return "Linhas afetadas: "+linhasAfetadas;
     }
 
-
-    // ===================== DELETE =====================
-
+    // Delete: exclui um carro, mas so se ele estiver "disponivel".
+    // Antes de deletar, faz uma leitura (Read) para conferir se o carro existe
+    // e qual e o status dele. Carro alugado ou em manutencao nao pode ser excluido.
     @Override
     public String deletarCarro(String tabela, String placa){
         Carro c = selecionarPlaca(tabela, placa);
 
+        // Nao achou nenhum carro com essa placa
         if(c == null){
             return "Carro não encontrado!";
         }
 
+        // Regra de negocio: so exclui se estiver disponivel
         if(!c.getStatus().equals("disponivel")){
             return "Não é possível excluir: carro está " + c.getStatus() + ".";
         }
@@ -182,12 +189,10 @@ public class CrudCarro implements ICarroDAO {
         return "Codigo retornado: "+codigoRetornado;
     }
 
-    // método auxiliar, não faz parte da interface: evita repetir o mesmo
-    // bloco de "ler ResultSet e montar Carro" em cada método de SELECT
-
-    // método auxiliar (não é CRUD, é só um utilitário interno,
-    // por isso não está na interface nem tem @Override)
-
+    // Metodo auxiliar, nao faz parte do CRUD nem da interface (por isso nao tem @Override
+    // e e private). Evita repetir em cada SELECT o bloco de "ler as colunas do ResultSet
+    // e montar um Carro". Le a linha atual do ResultSet e devolve um Carro preenchido.
+    // Os nomes entre aspas sao os nomes das colunas no banco.
     private Carro montarCarro(ResultSet rset) throws Exception {
         Carro c = new Carro();
         c.setPlaca(rset.getString("placa"));

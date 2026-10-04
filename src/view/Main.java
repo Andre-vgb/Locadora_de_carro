@@ -1,5 +1,4 @@
-package view;//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+package view;
 import controller.CarroController;
 import model.Carro;
 import model.dao.Conexao;
