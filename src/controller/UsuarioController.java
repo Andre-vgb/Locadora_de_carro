@@ -1,3 +1,5 @@
+//a ideia desse controller é conferir tudo antes de chegar no CRUD, se algo der errado ele para aq
+// e nao deixa nem chegar ao banco (que é oq o CRUD comanda)
 package controller;
 
 import model.Usuario;
@@ -32,6 +34,7 @@ public class UsuarioController {
         return false;
     }
 
+        //uma lista de conferencia (Se aprovar tudo ele passa pro CRUD)
     public String cadastrarUsuario(Usuario novoUsuario, String confirmacaoSenha) {
         try {
             if (novoUsuario.getNome() == null || novoUsuario.getNome().isBlank()) {
@@ -62,6 +65,8 @@ public class UsuarioController {
         return "Erro ao cadastrar usuario!";
     }
 
+
+    //confere se a pessoa pode entrar (LOGIN)
     public Usuario fazerLogin(String login, String senha, String tipoEsperado) {
         try {
             if (login == null || login.isBlank() || senha == null || senha.isBlank()) {
@@ -83,6 +88,7 @@ public class UsuarioController {
         return null;
     }
 
+    //SO ADMIN PODE VER ESSA LISTA, SE NAO FOR ELE DEVOLVE UMA LISTA VAZIA
     public ArrayList<Usuario> listarUsuarios(boolean usuarioEhAdministrador) {
         if (!usuarioEhAdministrador) {
             return new ArrayList<>();
@@ -95,6 +101,7 @@ public class UsuarioController {
         return null;
     }
 
+    //nao confere nada, apenas passa para o usuario
     public Usuario buscarPorId(int id) {
         try {
             return this.crudUsuario.selecionarPorId(this.tabela, id);
@@ -104,6 +111,7 @@ public class UsuarioController {
         return null;
     }
 
+    //confere antes de atualizar o usuario, se der certo chama o atualizar do CRUD (se nao der ele avisa)
     public String editarUsuario(int id, Usuario dadosAtualizados) {
         try {
             if (dadosAtualizados.getLogin() == null || dadosAtualizados.getLogin().isBlank()) {
@@ -122,6 +130,7 @@ public class UsuarioController {
         return "Erro ao editar usuario!";
     }
 
+    //SO ADMIN PODE EXCLUIR (SE FOR CHAMA O DELETAR DO CRUD)
     public String excluirUsuario(int id, boolean usuarioEhAdministrador) {
         if (!usuarioEhAdministrador) {
             return "Apenas administradores podem excluir usuarios.";

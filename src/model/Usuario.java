@@ -29,7 +29,7 @@ public class Usuario {
         this.tipo = tipo;
     }
 
-    // Construtor vazio
+    // Construtor vazio, usado quando nao tem todas as informações do usuario.(folha em branco)em q
     public Usuario() {
 
     }

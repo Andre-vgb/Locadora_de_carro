@@ -46,25 +46,27 @@ public class CrudUsuario implements IUsuarioDAO {
     }
 
     //lista todos os usuarios do banco em ordem alfabetica
+    //esse metodo pega dtodos os usuarios do banco e devolve em uma lista
     @Override
-    public ArrayList<Usuario> selecionarTodos(String tabela) {
+    public ArrayList<Usuario> selecionarTodos(String tabela) {    //cria a lista
         ArrayList<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT * FROM " + tabela + " ORDER BY login";
+        String sql = "SELECT * FROM " + tabela + " ORDER BY login";  //comando sql
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {    // executeQuery é usado no SELECT e traz os dados para (rs)
 
             while (rs.next()) {     //pula pra proxima linha e quando acaba o while para
-                usuarios.add(montarUsuario(rs));
+                usuarios.add(montarUsuario(rs));  // (montar) transforma linha em usuario e coloca em usuarios.add
             }
 
         } catch (SQLException e) {
             System.out.println("Erro ao listar usuarios: " + e.getMessage());
         }
 
-        return usuarios;
+        return usuarios;//retorna a lista
     }
 
+    //BUSCA o usuario pelo id
     @Override
     public Usuario selecionarPorId(String tabela, int id) {
         String sql = "SELECT * FROM " + tabela + " WHERE id = ?";
@@ -103,6 +105,7 @@ public class CrudUsuario implements IUsuarioDAO {
         return false;
     }
 
+    //confere se o login e a senha estao corretos
     @Override
     public Usuario validarLogin(String tabela, String login, String senha) {
         String sql = "SELECT * FROM " + tabela + " WHERE login = ? AND senha = ?";
@@ -124,6 +127,7 @@ public class CrudUsuario implements IUsuarioDAO {
         return null;
     }
 
+    //altera os dados de um usuario existente no banco
     @Override
     public String atualizarUsuario(String tabela, int id, Usuario dadosAtualizados) {
         String sql = "UPDATE " + tabela + " SET nome = ?, sobrenome = ?, login = ?, senha = ?, tipo = ? WHERE id = ?";
@@ -136,7 +140,7 @@ public class CrudUsuario implements IUsuarioDAO {
             ps.setString(5, dadosAtualizados.getTipo());
             ps.setInt(6, id);
 
-            int linhasAfetadas = ps.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();        //(execute) responde quantas linhas ele mudou
             if (linhasAfetadas == 0) {
                 return "Usuario nao encontrado!";
             }
@@ -150,6 +154,7 @@ public class CrudUsuario implements IUsuarioDAO {
         }
     }
 
+        //apaga o usuario pelo id
     @Override
     public String deletarUsuario(String tabela, int id) {
         Usuario u = selecionarPorId(tabela, id);
