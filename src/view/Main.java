@@ -8,18 +8,18 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
         Conexao conn = new Conexao();
-        conn.connDB("locadora");
+        conn.connDB();
 
         CarroController controller = new CarroController();
 
-        if(!controller.conectaBD("locadora")){
+        if(!controller.conectaBD()){
             System.out.println("Erro na conexao!");
             return;
         }
 
         // ===== TESTE 1: CADASTRAR =====
         Carro novoCarro = new Carro();
-        novoCarro.setPlaca("BBC1234");
+        novoCarro.setPlaca("BBC1230");
         novoCarro.setModelo("clio");
         novoCarro.setAno(2011);
         novoCarro.setCor("Preto");
@@ -29,7 +29,7 @@ public class Main {
         String resposta = controller.cadastrarCarro(novoCarro);
         System.out.println(resposta);
 
-        // ===== TESTE 2: LISTAR TODOS =====
+       /* // ===== TESTE 2: LISTAR TODOS =====
         ArrayList<Carro> lista = controller.listarCarros();
         for(Carro c : lista){
             System.out.println(c.getPlaca() + " | " + c.getModelo() + " | " + c.getStatus());
@@ -44,13 +44,16 @@ public class Main {
         }
 
         // ===== TESTE 4: ALTERAR STATUS (simulando uma locação) =====
-        //System.out.println(controller.alterarStatus("ABC1234", "alugado"));
+        System.out.println(controller.alterarStatus("ABC1234", "alugado"));
 
         // ===== TESTE 5: TENTAR EXCLUIR UM CARRO ALUGADO (deve falhar) =====
-        //System.out.println(controller.excluirCarro("ABC1234"));
+        System.out.println(controller.excluirCarro("ABC1234"));
 
         // ===== TESTE 6: DEVOLVER O CARRO E EXCLUIR DE VERDADE =====
-        //System.out.println(controller.alterarStatus("ABC1234", "disponivel"));
-        //System.out.println(controller.excluirCarro("ABC1234"));
+        System.out.println(controller.alterarStatus("ABC1234", "disponivel"));
+        System.out.println(controller.excluirCarro("ABC1234"));
+
+        // ==== Teste 7: CAadastrar um novo cliente====*/
+
     }
 }

@@ -28,10 +28,10 @@ public class LocacaoController {
 
     // Abre a conexao com o banco e cria os dois CRUDs com o MESMO Statement.
     // Retorna true se deu certo, para a view saber se pode continuar.
-    public boolean conectaBD(String db){
+    public boolean conectaBD(){
         try {
             Conexao conn = new Conexao();
-            conn.connDB(db);
+            conn.connDB();
             Statement s = conn.getS();
             crudLocacao = new CrudLocacao(s);
             crudCarro = new CrudCarro(s);

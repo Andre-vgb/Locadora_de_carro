@@ -24,10 +24,10 @@ public class CarroController {
     // Abre a conexao com o banco informado (ex: "locadora") e cria o CRUD
     // usando o Statement dessa conexao.
     // Retorna true se deu certo, para a view decidir se pode continuar.
-    public boolean conectaBD(String db){
+    public boolean conectaBD(){
         try {
             Conexao conn = new Conexao();
-            conn.connDB(db);
+            conn.connDB();
             Statement s = conn.getS();
             crudCarro = new CrudCarro(s);
             return true;

@@ -17,22 +17,28 @@ public class Conexao {
         return s;
     }
 
-    public void connDB(String db){
+    public void connDB(){
         try {
-            String URL = "jdbc:postgresql://localhost:5432/"+db;
+
             String user = "postgres";
-            String pwd = "1234";
+            String pwd = "unifebe123@";
+            String URL = "jdbc:postgresql://aws-1-us-west-2.pooler.supabase.com:6543/postgres?user=postgres.pzaclymyivfwhmafmleh&password=unifebe123@";
+
+
 
             /*Conectando ao Servidor de Banco de Dados*/
             Class.forName("org.postgresql.Driver");
             this.Conn = DriverManager.getConnection(URL, user, pwd);
             this.s = this.Conn.createStatement();
 
-            System.out.println("BD Conectado");
-        }catch(SQLException e){
+            System.out.println("Supabase conectado!!");
+
+        }catch(SQLException e) {
+            System.out.println("Erro ao conectar ao Supabase:");
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Driver PostgresSQL não encontrado.",e);
         }
     }
 

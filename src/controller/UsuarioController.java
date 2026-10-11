@@ -16,10 +16,10 @@ public class UsuarioController {
     public UsuarioController() {
     }
 
-    public boolean conectaBD(String db) {
+    public boolean conectaBD() {
         try {
             Conexao conexao = new Conexao();
-            conexao.connDB(db);
+            conexao.connDB();
             Connection conn = conexao.getConn();
 
             if (conn == null) {
