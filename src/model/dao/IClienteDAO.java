@@ -2,22 +2,23 @@ package model.dao;
 
 import model.Cliente;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface IClienteDAO {
 
-    // Create
-    String cadastrarCliente(String tabela, Cliente novoCliente);
+    // create
+    String cadastrarCliente(String tabela, Cliente novoCliente) throws SQLException;
 
-    // Read
-    ArrayList<Cliente> selecionarTodos(String tabela);
-    Cliente selecionarPorId(String tabela, int id);
-    ArrayList<Cliente> buscarPorNome(String tabela, String nome);
-    ArrayList<Cliente> buscarPorTelefone(String tabela, String telefone);
+    // read
+    ArrayList<Cliente> selecionarTodos(String tabela) throws SQLException;
+    Cliente selecionarPorId(String tabela, int id) throws SQLException;
+    ArrayList<Cliente> buscarPorNome(String tabela, String nome) throws SQLException;
+    ArrayList<Cliente> buscarPorTelefone(String tabela, String telefone) throws SQLException;
 
-    // Update
-    String atualizarCliente(String tabela, int id, Cliente dadosAtualizados);
+    // update
+    String atualizarCliente(String tabela, int id, Cliente dadosAtualizados) throws SQLException;
 
-    // Delete
-    String deletarCliente(String tabela, int id);
+    // delete
+    String deletarCliente(String tabela, int id) throws SQLException;
 }
