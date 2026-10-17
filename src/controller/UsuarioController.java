@@ -67,21 +67,12 @@ public class UsuarioController {
 
 
     //confere se a pessoa pode entrar (LOGIN)
-    public Usuario fazerLogin(String login, String senha, String tipoEsperado) {
+    public Usuario fazerLogin(String login, String senha) {
         try {
             if (login == null || login.isBlank() || senha == null || senha.isBlank()) {
                 return null;
             }
-
-            Usuario usuario = this.crudUsuario.validarLogin(this.tabela, login, senha);
-
-            if (usuario == null) {
-                return null;
-            }
-            if (!usuario.getTipo().equals(tipoEsperado)) {
-                return null;
-            }
-            return usuario;
+            return this.crudUsuario.validarLogin(this.tabela, login, senha);
         } catch (Exception e) {
             e.printStackTrace();
         }
