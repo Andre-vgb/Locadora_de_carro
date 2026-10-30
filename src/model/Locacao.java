@@ -8,7 +8,8 @@ public class Locacao {
     private String placaCarro;
     private int idCliente;
     private Date dataLocacao;
-    private Date dataDevolucao;
+    private Date dataPrevistaDevolucao; // data em que o cliente combinou de entregar o carro
+    private Date dataDevolucao;         // data em que o carro foi realmente devolvido (vazia enquanto em aberto)
 
     public Locacao(int id, String placaCarro, int idCliente, Date dataLocacao, Date dataDevolucao) {
         this.id = id;
@@ -52,6 +53,14 @@ public class Locacao {
 
     public void setDataLocacao(Date dataLocacao) {
         this.dataLocacao = dataLocacao;
+    }
+
+    public Date getDataPrevistaDevolucao() {
+        return dataPrevistaDevolucao;
+    }
+
+    public void setDataPrevistaDevolucao(Date dataPrevistaDevolucao) {
+        this.dataPrevistaDevolucao = dataPrevistaDevolucao;
     }
 
     public Date getDataDevolucao() {

@@ -13,6 +13,10 @@ import java.util.ArrayList;
 // (mudar status do carro, calcular valor total) ficam no LocacaoController.
 public class CrudLocacao implements ILocacaoDAO {
 
+    // Nome da coluna da placa na tabela locacao. Todos os comandos SQL desta classe usam esta constante,
+    // entao se no banco a coluna tiver outro nome (por exemplo placa_carro), basta mudar aqui.
+    private static final String COLUNA_PLACA = "placa";
+
     // Objeto usado para enviar os comandos SQL ao banco (vem da classe Conexao)
     private Statement s;
 
@@ -23,19 +27,23 @@ public class CrudLocacao implements ILocacaoDAO {
 
     // Create: insere uma nova locacao (momento em que o cliente leva o carro).
     // O id nao entra no INSERT porque e gerado sozinho pelo banco (SERIAL).
+    // data_prevista_devolucao e a data que o cliente combinou de entregar o carro.
     // data_devolucao normalmente comeca nula, pois o carro ainda nao foi devolvido.
-    // Por isso, se vier null, escreve a palavra NULL no SQL (sem aspas),
+    // Por isso, se uma data vier null, escreve a palavra NULL no SQL (sem aspas),
     // senao escreve a data entre aspas simples, no formato yyyy-MM-dd.
     @Override
     public String inserirLocacao(String tabela, Locacao novaLocacao){
+        String valorDataPrevista = (novaLocacao.getDataPrevistaDevolucao() == null)
+                ? "NULL"
+                : "'" + novaLocacao.getDataPrevistaDevolucao() + "'";
         String valorDataDevolucao = (novaLocacao.getDataDevolucao() == null)
                 ? "NULL"
                 : "'" + novaLocacao.getDataDevolucao() + "'";
 
         // Textos e datas vao entre aspas simples, numeros (id_cliente) nao
-        String SQL = "INSERT INTO " + tabela + " (placa, id_cliente, data_locacao, data_devolucao) VALUES ('"
+        String SQL = "INSERT INTO " + tabela + " (" + COLUNA_PLACA + ", id_cliente, data_locacao, data_prevista_devolucao, data_devolucao) VALUES ('"
                 + novaLocacao.getPlacaCarro() + "', " + novaLocacao.getIdCliente() + ", '"
-                + novaLocacao.getDataLocacao() + "', " + valorDataDevolucao + ")";
+                + novaLocacao.getDataLocacao() + "', " + valorDataPrevista + ", " + valorDataDevolucao + ")";
 
         int linhasAfetadas = -1;
         try{
@@ -109,7 +117,7 @@ public class CrudLocacao implements ILocacaoDAO {
     // Serve para ver o historico do carro. A placa e texto, por isso vai entre aspas simples.
     @Override
     public ArrayList<Locacao> filtrarPorCarro(String tabela, String placaCarro){
-        String SQL = "SELECT * FROM \"" + tabela + "\" WHERE placa = '" + placaCarro + "';";
+        String SQL = "SELECT * FROM \"" + tabela + "\" WHERE " + COLUNA_PLACA + " = '" + placaCarro + "';";
         try {
             ResultSet rset = s.executeQuery(SQL);
             ArrayList<Locacao> lista = new ArrayList<>();
@@ -147,7 +155,7 @@ public class CrudLocacao implements ILocacaoDAO {
     // A data de devolucao nao muda aqui, ela tem o proprio metodo (registrarDevolucao).
     @Override
     public String atualizarLocacao(String tabela, int id, Locacao dadosAtualizados){
-        String SQL = "UPDATE " + tabela + " SET placa='" + dadosAtualizados.getPlacaCarro()
+        String SQL = "UPDATE " + tabela + " SET " + COLUNA_PLACA + "='" + dadosAtualizados.getPlacaCarro()
                 + "', id_cliente=" + dadosAtualizados.getIdCliente()
                 + ", data_locacao='" + dadosAtualizados.getDataLocacao()
                 + "' WHERE id = " + id + ";";
@@ -205,9 +213,10 @@ public class CrudLocacao implements ILocacaoDAO {
     private Locacao montarLocacao(ResultSet rset) throws Exception {
         Locacao l = new Locacao();
         l.setId(rset.getInt("id"));
-        l.setPlacaCarro(rset.getString("placa"));
+        l.setPlacaCarro(rset.getString(COLUNA_PLACA));
         l.setIdCliente(rset.getInt("id_cliente"));
         l.setDataLocacao(rset.getDate("data_locacao"));
+        l.setDataPrevistaDevolucao(rset.getDate("data_prevista_devolucao"));
         l.setDataDevolucao(rset.getDate("data_devolucao"));
         return l;
     }

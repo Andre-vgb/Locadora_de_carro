@@ -22,7 +22,7 @@ public class Carro {
         this.caminhoImagem = caminhoImagem;
     }
 
-    public Carro(){
+    public Carro() {
 
     }
 
@@ -89,16 +89,22 @@ public class Carro {
     public void setCaminhoImagem(String caminhoImagem) {
         this.caminhoImagem = caminhoImagem;
     }
+
     @Override
     public String toString() {
-        return "Carro{" +
-                "placa='" + placa + '\'' +
-                ", modelo='" + modelo + '\'' +
-                ", ano=" + ano +
-                ", cor='" + cor + '\'' +
-                ", status='" + status + '\'' +
-                ", valorDiaria=" + valorDiaria +
-                ", caminhoImagem='" + caminhoImagem + '\'' +
-                '}';
+        // se a marca ou a imagem estiverem vazias no banco, mostra um texto no lugar de "null"
+        String marcaTexto = (marca == null) ? "sem marca" : marca;
+        String imagemTexto = (caminhoImagem == null) ? "sem imagem" : caminhoImagem;
+
+        return
+                "\n === VEÍCULO === \n "
+                        + "Placa: " + placa
+                        + "\n " + marcaTexto + " " + modelo
+                        + " \n Ano: " + ano
+                        + " \n Cor: " + cor
+                        + " \n Status: " + status
+                        + " \n Diaria: R$ " + String.format("%.2f", valorDiaria)
+                        + " \n Imagem: " + imagemTexto;
     }
 }
+

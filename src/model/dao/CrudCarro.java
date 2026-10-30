@@ -18,12 +18,13 @@ public class CrudCarro implements ICarroDAO {
 
     // Create: insere um carro novo na tabela.
     // O SQL e montado juntando texto com os valores do objeto Carro.
-    // Textos (placa, modelo, cor, status) vao entre aspas simples, numeros (ano, valor) nao.
+    // Textos (placa, marca, modelo, cor, status) vao entre aspas simples, numeros (ano, valor) nao.
+    // A marca precisa ser gravada junto, senao ela se perde (a coluna marca deve existir na tabela).
     // Retorna "Codigo retornado: 1" quando deu certo (1 linha inserida) e -1 se deu erro.
     @Override
     public String inserirCarro(String tabela, Carro novoCarro){
-        String SQL = "INSERT INTO "+tabela+" (placa, modelo, ano, cor, status, valor_diaria) VALUES ('"
-                +novoCarro.getPlaca()+"','"+novoCarro.getModelo()+"', "
+        String SQL = "INSERT INTO "+tabela+" (placa, marca, modelo, ano, cor, status, valor_diaria) VALUES ('"
+                +novoCarro.getPlaca()+"','"+novoCarro.getMarca()+"','"+novoCarro.getModelo()+"', "
                 +novoCarro.getAno()+", '"+novoCarro.getCor()+"', '"
                 +novoCarro.getStatus()+"', "+novoCarro.getValorDiaria()+")";
         int linhasAfetadas = -1;
@@ -111,12 +112,13 @@ public class CrudCarro implements ICarroDAO {
         return null;
     }
 
-    // Update: altera os dados cadastrais de um carro (modelo, ano, cor e valor da diaria).
+    // Update: altera os dados cadastrais de um carro (marca, modelo, ano, cor e valor da diaria).
     // O WHERE garante que so o carro dessa placa seja alterado.
     // Placa, status e imagem nao mudam aqui, cada um tem seu proprio metodo.
     @Override
     public String atualizarCarro(String tabela, String placa, Carro dadosAtualizados){
-        String SQL = "UPDATE " + tabela + " SET modelo='" + dadosAtualizados.getModelo()
+        String SQL = "UPDATE " + tabela + " SET marca='" + dadosAtualizados.getMarca()
+                + "', modelo='" + dadosAtualizados.getModelo()
                 + "', ano=" + dadosAtualizados.getAno()
                 + ", cor='" + dadosAtualizados.getCor()
                 + "', valor_diaria=" + dadosAtualizados.getValorDiaria()
@@ -171,12 +173,12 @@ public class CrudCarro implements ICarroDAO {
 
         // Nao achou nenhum carro com essa placa
         if(c == null){
-            return "Carro não encontrado!";
+            return "Carro nao encontrado!";
         }
 
         // Regra de negocio: so exclui se estiver disponivel
         if(!c.getStatus().equals("disponivel")){
-            return "Não é possível excluir: carro está " + c.getStatus() + ".";
+            return "Nao e possivel excluir: carro esta " + c.getStatus() + ".";
         }
 
         String SQL = "DELETE FROM "+tabela+" WHERE placa = '"+placa+"';";
@@ -196,6 +198,7 @@ public class CrudCarro implements ICarroDAO {
     private Carro montarCarro(ResultSet rset) throws Exception {
         Carro c = new Carro();
         c.setPlaca(rset.getString("placa"));
+        c.setMarca(rset.getString("marca"));
         c.setModelo(rset.getString("modelo"));
         c.setAno(rset.getInt("ano"));
         c.setCor(rset.getString("cor"));
